@@ -1,10 +1,10 @@
 # [level 0] 문자열 붙여서 출력하기 - 181946 
 
-[문제 링크](https://school.programmers.co.kr/learn/courses/30/lessons/181946) 
+[문제 링크](https://school.programmers.co.kr/learn/courses/30/lessons/181946?language=kotlin) 
 
 ### 성능 요약
 
-메모리: 7.17 MB, 시간: 17.07 ms
+메모리: 47.7 MB, 시간: 124.70 ms
 
 ### 구분
 
@@ -16,7 +16,7 @@
 
 ### 제출 일자
 
-2024년 05월 21일 17:07:45
+2024년 05월 21일 17:08:26
 
 ### 문제 설명
 
