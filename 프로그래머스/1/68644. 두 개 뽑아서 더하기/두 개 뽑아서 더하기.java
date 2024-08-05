@@ -1,26 +1,21 @@
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Iterator;
+import java.util.ArrayList;
 class Solution {
     public int[] solution(int[] numbers) {
-		HashSet<Integer> set= new HashSet<>();
+		int[] used = new int[200];
+		ArrayList<Integer> ans = new ArrayList<>();
 		for (int i = 0; i < numbers.length; i++) {
 			for (int j = i; j < numbers.length; j++) {
 				if(i!=j) {
-					set.add(numbers[i]+numbers[j]);
+					int tmp = numbers[i]+numbers[j];
+					if(used[tmp]==0) {
+						used[tmp]=1;
+						ans.add(tmp);
+					}
 				}
 			}
 		}
-		
-		int index=0;
-		int[] ans=new int[set.size()];
-		Iterator<Integer> iter = set.iterator();
-		while(iter.hasNext()) {
-			ans[index]=iter.next();
-			index++;
-		}
-        Arrays.sort(ans);
-        return ans;
+		ans.sort(null);
+        return ans.stream().mapToInt(i->i).toArray();
     }
 }
