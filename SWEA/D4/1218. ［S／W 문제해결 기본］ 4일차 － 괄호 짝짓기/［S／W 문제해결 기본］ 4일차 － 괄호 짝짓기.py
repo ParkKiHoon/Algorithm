@@ -1,19 +1,49 @@
-import copy
+import java.io.BufferedReader;
+import java.io.InputStreamReader;import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Stack;
 
-times = 10
-for time in range(times):
-    notUse=input()
-    list=input()
-    stk=[]
-    for i in list:
-        stk.append(i)
-        while True:
-            if len(stk)>1:
-                if [stk[-2],stk[-1]]==["(",")"] or [stk[-2], stk[-1]] == ["[", "]"] or [stk[-2], stk[-1]] == ["{", "}"] or [stk[-2], stk[-1]] == ["<", ">"]:
-                    stk.pop()
-                    stk.pop()
-                else:
-                    break
-            else:
-                break
-    print("#{} {}".format(time+1,1 if len(stk)==0 else 0))
+public class Solution {
+	public static void main(String[] args) throws Exception {   
+       BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
+       StringBuilder sb = new StringBuilder();
+       int T;
+       T=10;
+       
+       for (int test_case = 1; test_case <= T; test_case++) {
+           sb.append("#" + test_case + " ");
+            
+           // 여러분의 알고리즘 코드 작성하기
+           int len = Integer.parseInt(in.readLine());
+           String order=in.readLine();
+           Stack<Integer> stack = new Stack<>();
+           Map<String,Integer> map=new HashMap<>();
+           
+           map.put("(", -1);
+           map.put("[", -2);
+           map.put("{", -3);
+           map.put("<", -4);
+           
+           map.put(")", 1);
+           map.put("]", 2);
+           map.put("}", 3);
+           map.put(">", 4);
+           
+           for(String s : order.split("")) {
+        	   stack.add(map.get(s));
+    		   while(stack.size()>1 && 
+    				   stack.get(stack.size()-1)+stack.get(stack.size()-2) == 0) {
+    			   stack.pop();
+    			   stack.pop();
+    		   }
+           }
+           
+           sb.append(stack.size()==0? 1 : 0);
+           sb.append('\n');
+            
+       }
+        
+       System.out.println(sb);
+    }
+}
