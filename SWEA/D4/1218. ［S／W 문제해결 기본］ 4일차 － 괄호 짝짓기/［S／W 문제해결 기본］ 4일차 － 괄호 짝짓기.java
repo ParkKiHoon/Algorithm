@@ -32,8 +32,9 @@ public class Solution {
            
            for(String s : order.split("")) {
         	   stack.add(map.get(s));
-    		   while(stack.size()>1 && 
-    				   stack.get(stack.size()-1)+stack.get(stack.size()-2) == 0) {
+    		   while(stack.size()>1 
+                     && stack.get(stack.size()-1)>0
+                     && stack.get(stack.size()-1)+stack.get(stack.size()-2) == 0) {
     			   stack.pop();
     			   stack.pop();
     		   }
