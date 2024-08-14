@@ -1,28 +1,67 @@
-times = int(input())
-for time in range(times):
-    n,m=map(int,input().split())
-    arr=[i for i in range(n+1)]
-    ans=""
-    def find_parent(x):
-        if arr[x]==x:
-            return x
-        else:
-            return find_parent(arr[x])
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.Arrays;
 
-    for i in range(m):
-        order, a, b = map(int,input().split())
-        if order:
-            if find_parent(a)==find_parent(b):
-                ans+="1"
-            else:
-                ans+="0"
-        else:
-            a=find_parent(a)
-            b=find_parent(b)
-            if a>b:
-                arr[a]=b
-            else:
-                arr[b]=a
-    print("#{} {}".format(time+1,ans))
-    # 1 001
-    # 1 001
+public class Solution {
+	static int[] arr;
+	static int target;
+	static int ans;
+
+	static int find(int a) {
+		if(arr[a]==a) {
+			return a;
+		}else {
+			return arr[a]=find(arr[a]);
+		}
+	}
+
+	static void union(int a, int b) {
+		int rootA=find(a);
+		int rootB=find(b);
+		if(rootA!=rootB) {
+			arr[rootA]=rootB;
+		}
+	}
+	
+	public static void main(String[] args) throws IOException {
+		BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
+		StringBuilder sb = new StringBuilder();
+		int T;
+		// T = 10;
+		T = Integer.parseInt(in.readLine());
+		ans = 0;
+		for (int test_case = 1; test_case <= T; test_case++) {
+			sb.append("#" + test_case + " ");
+
+			String[] split = in.readLine().split(" ");
+			int n = Integer.parseInt(split[0]);
+			int m = Integer.parseInt(split[1]);
+
+			arr = new int[n + 1];
+			for (int i = 0; i < n + 1; i++) {
+				arr[i] = i;
+			}
+			for (int i = 0; i < m; i++) {
+				String[] order = in.readLine().split(" ");
+				int a = Integer.parseInt(order[1]);
+				int b = Integer.parseInt(order[2]);
+				if (Integer.parseInt(order[0]) == 0) {
+					union(a,b);
+				} else {
+					if(find(a)==find(b)) {
+						sb.append(1);
+					}
+					else {
+						sb.append(0);
+					}
+				}
+			}
+			sb.append('\n');
+
+		}
+
+		System.out.println(sb);
+	}
+
+}
