@@ -1,28 +1,88 @@
-times = int(input())
-for time in range(times):
-    n=int(input())
-    board=[]
-    for i in range(n):
-        tmp=input()
-        tmp2=[]
-        for j in tmp:
-            tmp2.append(int(j))
-        board.append(tmp2)
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.Comparator;
+import java.util.PriorityQueue;
 
-    dx=[0,0,1,-1]
-    dy=[1,-1,0,0]
-    dist=[[999999999999 for _ in range(n)]for _ in range(n)]
-    dist[0][0]=0
-    from collections import deque
-    queue=deque()
-    queue.append([0,0])
-    while queue:
-        x,y=queue.popleft()
-        for i in range(4):
-            cx=x+dx[i]
-            cy=y+dy[i]
-            if 0<=cx<n and 0<=cy<n:
-                if dist[x][y]+board[cx][cy]<dist[cx][cy]:
-                    dist[cx][cy]=dist[x][y]+board[cx][cy]
-                    queue.append([cx,cy])
-    print("#",time+1," ",dist[n-1][n-1],sep="")
+public class Solution {
+
+	public static void main(String[] args) throws IOException {
+		BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
+		StringBuilder sb = new StringBuilder();
+		int T;
+		T = Integer.parseInt(in.readLine());
+
+		for (int test_case = 1; test_case <= T; test_case++) {
+			sb.append("#" + test_case + " ");
+
+			N = Integer.parseInt(in.readLine());
+			board = new int[N][N];
+			visited = new int[N][N];
+			for (int i = 0; i < N; i++) {
+				String[] split = in.readLine().split("");
+				for (int j = 0; j < N; j++) {
+					board[i][j] = Integer.parseInt(split[j]);
+					visited[i][j]=Integer.MAX_VALUE;
+				}
+			}
+
+			sol(0, 0);
+			sb.append(visited[N-1][N-1]);
+			sb.append("\n");
+		}
+
+		System.out.println(sb);
+	}
+
+	static int N;
+	static int[] dx = { 1, 0, 0, -1 };
+	static int[] dy = { 0, 1, -1, 0 };
+	static int[][] board;
+	static int[][] visited;
+
+	private static void sol(int startX, int startY) {
+
+		PriorityQueue<Node> queue= new PriorityQueue<>(new Comparator<Node>() {
+			@Override
+			public int compare(Node o1, Node o2) {
+				return o1.cost-o2.cost;
+			}
+		});
+		
+		queue.add(new Node(startX,startY,0));
+		visited[startX][startY]=0;
+		
+		while(!queue.isEmpty()) {
+			Node cur=queue.poll();
+			int x=cur.x;
+			int y=cur.y;
+			int cost=cur.cost;
+			
+			if(cost>visited[x][y]) {
+				continue;
+			}
+			for(int i=0;i<4;i++) {
+				int nx=cur.x+dx[i];
+				int ny=cur.y+dy[i];
+				if(0<=nx && nx<N && 0<=ny && ny<N) {
+					int newCost=cost+board[nx][ny];
+					if(newCost<visited[nx][ny]) {
+						visited[nx][ny]=newCost;
+						queue.add(new Node(nx, ny,newCost));
+					}
+				}
+			}
+		}
+		
+
+	}
+	
+	static class Node{
+		int x,y,cost;
+		Node(int x, int y,int cost){
+			this.x=x;
+			this.y=y;
+			this.cost=cost;
+		}
+	}
+}
