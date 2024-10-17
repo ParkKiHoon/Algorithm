@@ -11,7 +11,7 @@ class Solution {
         y--;
         r--;
         c--;
-        
+
         ans="";
         sb=new StringBuilder();
         dfs(x,y,r,c,0,k,n,m);
@@ -25,7 +25,7 @@ class Solution {
     
     static public void dfs(int cx, int cy, int r,int c, int ck,int k,int n,int m){
         if (!ans.equals("")) return;
-        
+    
         int distToEnd= Math.abs(r-cx)+Math.abs(c-cy);
         int remainK=k-ck;
         if(distToEnd>remainK){
