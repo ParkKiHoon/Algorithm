@@ -4,7 +4,6 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Scanner;
 
 public class Main {
 
@@ -30,7 +29,7 @@ public class Main {
 
 		public void insert(String str) {
 			Node node = this.root;
-			
+
 			for (int i = 0; i < str.length(); i++) {
 				char ch = str.charAt(i);
 				if (node.child.containsKey(ch)) {
@@ -68,19 +67,21 @@ public class Main {
 	public static void main(String[] args) throws NumberFormatException, IOException {
 		BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
 		String line;
-		while((line = in.readLine()) != null && !line.isEmpty()) {
-		    int N = Integer.parseInt(line);
+		while(true) {
+			line=in.readLine();
+			if(line==null || line.equals("")) {
+				break;
+			}
+			int N=Integer.parseInt(line);
 			Trie trie=new Trie();
 			ArrayList<String> str=new ArrayList<>();
-			
+			Collections.sort(str);
 			double sum=0;
 			for(int i=0;i<N;i++) {
 				String tmp=in.readLine();
 				str.add(tmp);
 				trie.insert(tmp);
 			}
-			
-			//Collections.sort(str);
 			
 			for(String st:str) {
 				sum+=trie.search(st);
