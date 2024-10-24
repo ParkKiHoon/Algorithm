@@ -8,12 +8,9 @@ class Solution {
             int cnt = 0;
             Stack<Character> c = new Stack<>();
             for(int j=0; j<s[i].length(); j++) {
-                if(s[i].charAt(j) == '1') {
-                    c.add('1');
-                    continue;
-                }
-                if(c.size() < 2 || c.peek() == '0') {
-                    c.add('0');
+                if(s[i].charAt(j) == '1'
+                   || c.size() < 2 || c.peek() == '0') {
+                    c.add(s[i].charAt(j));
                     continue;
                 }
                 char temp = c.pop();
