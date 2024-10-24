@@ -80,7 +80,7 @@ public class Main {
 				trie.insert(tmp);
 			}
 			
-			Collections.sort(str);
+			//Collections.sort(str);
 			
 			for(String st:str) {
 				sum+=trie.search(st);
