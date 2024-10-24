@@ -1,57 +1,53 @@
-import java.util.*;
+import java.util.Stack;
+
 class Solution {
     public String[] solution(String[] s) {
-        
         String[] answer = new String[s.length];
-        for(int i=0;i<s.length;i++){
-            answer[i]=dfs(s[i]);
+        
+        for(int i=0; i<s.length; i++) {
+            int cnt = 0;
+            Stack<Character> c = new Stack<>();
+            for(int j=0; j<s[i].length(); j++) {
+                if(s[i].charAt(j) == '1') {
+                    c.add('1');
+                    continue;
+                }
+                if(c.size() < 2 || c.peek() == '0') {
+                    c.add('0');
+                    continue;
+                }
+                char temp = c.pop();
+                if(c.peek() == '0') {
+                    c.add('1');
+                    c.add('0');
+                    continue;
+                }
+                c.pop();
+                cnt++;
+            }
+            
+            String temp = c.toString().replace(", ", "");
+            temp = temp.substring(1, temp.length()-1);
+            
+            answer[i] = "";
+
+            int idx = temp.indexOf("11");
+            if(idx != -1) {
+                answer[i] += temp.substring(0, idx);
+                temp = temp.substring(idx);
+            }
+            
+            idx = temp.lastIndexOf("0");
+            if(idx == -1) {
+                answer[i] += "110".repeat(cnt);
+                answer[i] += temp;
+            } else {
+                answer[i] += temp.substring(0, idx + 1);
+                answer[i] += "110".repeat(cnt);
+                answer[i] += temp.substring(idx + 1);
+            }
         }
         
         return answer;
-    }
-    
-    public String dfs(String str){
-        Deque<Character> stk= new ArrayDeque<>();
-        int cnt=0;
-        for(char ch : str.toCharArray()){
-            if(stk.size()>=2){
-                char tmp1=stk.pollLast();
-                char tmp2=stk.pollLast();
-                if(tmp2=='1' && tmp1=='1' && ch=='0'){
-                    cnt++;
-                }else{
-                    stk.offerLast(tmp2);
-                    stk.offerLast(tmp1);
-                    stk.offerLast(ch);
-                }
-            }else{
-                stk.offerLast(ch);
-            }
-        }
-
-        int indZero=-1;
-        int ind=1;
-        for(int i: stk){
-            if(i=='0'){
-                indZero=ind;
-            }
-            ind++;
-        }
-
-        if(indZero==-1){
-            indZero=0;
-        }
-        
-        StringBuilder sb= new StringBuilder();
-        for(int i=0;i<indZero;i++){
-            sb.append(stk.pop());
-        }
-        for(int i=0;i<cnt;i++){
-            sb.append("110");
-        }
-        while(!stk.isEmpty()){
-            sb.append(stk.pop());
-        }
-        return sb.toString();
     }
 }
