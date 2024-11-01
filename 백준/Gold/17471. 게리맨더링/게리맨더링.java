@@ -1,95 +1,154 @@
-
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
-import java.util.LinkedList;
+import java.util.List;
 import java.util.Queue;
+import java.util.StringTokenizer;
 
+/*
+1. 부분 집합 구하기
+2. 두 그룹관 연결성 확인
+3. 인구 차이 계산
+4. 최소 인구 차이 찾기
+ */
 public class Main {
-    
-    static int N;
-    static int[] population;
-    static ArrayList<Integer>[] adjList;
-    static boolean[] visited;
-    static int minDiff = Integer.MAX_VALUE;
 
-    public static void main(String[] args) throws IOException {
-        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        N = Integer.parseInt(br.readLine());
-        
-        population = new int[N + 1];
-        adjList = new ArrayList[N + 1];
-        
-        String[] popInput = br.readLine().split(" ");
-        for (int i = 1; i <= N; i++) {
-            population[i] = Integer.parseInt(popInput[i - 1]);
-            adjList[i] = new ArrayList<>();
-        }
-        
-        for (int i = 1; i <= N; i++) {
-            String[] line = br.readLine().split(" ");
-            int adjCount = Integer.parseInt(line[0]);
-            for (int j = 1; j <= adjCount; j++) {
-                int adjNode = Integer.parseInt(line[j]);
-                adjList[i].add(adjNode);
-            }
-        }
+	private static int n, r;
+	private static int[][] graph;
+	private static int[] population;
+	private static boolean[] selected;
+	private static int[] parents;
+	private static int answer = Integer.MAX_VALUE;
 
-        // 모든 경우의 수 탐색
-        for (int i = 1; i <= (1 << N) - 1; i++) {
-            ArrayList<Integer> groupA = new ArrayList<>();
-            ArrayList<Integer> groupB = new ArrayList<>();
+	public static void main(String[] args) throws Exception {
 
-            for (int j = 1; j <= N; j++) {
-                if ((i & (1 << (j - 1))) != 0) {
-                    groupA.add(j);
-                } else {
-                    groupB.add(j);
-                }
-            }
+		BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
+		StringTokenizer st;
 
-            if (groupA.size() > 0 && groupB.size() > 0) {
-                if (isConnected(groupA) && isConnected(groupB)) {
-                    int popA = getPopulation(groupA);
-                    int popB = getPopulation(groupB);
-                    minDiff = Math.min(minDiff, Math.abs(popA - popB));
-                }
-            }
-        }
+		n = Integer.parseInt(in.readLine());
+		graph = new int[n][n];
+		population = new int[n]; // 인구수
+		parents = new int[n];
+		selected = new boolean[n];
 
-        System.out.println(minDiff == Integer.MAX_VALUE ? -1 : minDiff);
-    }
+		String[] split = in.readLine().split(" ");
+		for (int i = 0; i < n; i++) {
+			population[i] = Integer.parseInt(split[i]);
+		}
 
-    // 각 그룹의 연결성을 확인하는 BFS
-    static boolean isConnected(ArrayList<Integer> group) {
-        visited = new boolean[N + 1];
-        Queue<Integer> queue = new LinkedList<>();
-        queue.offer(group.get(0));
-        visited[group.get(0)] = true;
-        int count = 1;
+		// 인접 구역 수 : 인접 구역 번호
+		for (int from = 0; from < n; from++) {
+			st = new StringTokenizer(in.readLine());
+			int cnt = Integer.parseInt(st.nextToken()); // Number of adjacent districts
+			for (int i = 0; i < cnt; i++) {
+				int to = Integer.parseInt(st.nextToken()) - 1; // Convert to 0-based index
+				graph[from][to] = 1;
+			}
+		}
 
-        while (!queue.isEmpty()) {
-            int current = queue.poll();
+		subSet(0);
+		System.out.println(answer == Integer.MAX_VALUE ? -1 : answer);
 
-            for (int neighbor : adjList[current]) {
-                if (group.contains(neighbor) && !visited[neighbor]) {
-                    visited[neighbor] = true;
-                    queue.offer(neighbor);
-                    count++;
-                }
-            }
-        }
+	}
 
-        return count == group.size();
-    }
+	private static void subSet(int r) {
 
-    // 각 그룹의 인구 수 계산
-    static int getPopulation(ArrayList<Integer> group) {
-        int sum = 0;
-        for (int node : group) {
-            sum += population[node];
-        }
-        return sum;
-    }
+		if (r == n) {
+			List<Integer> group1 = new ArrayList<>();
+			List<Integer> group2 = new ArrayList<>();
+
+			for (int i = 0; i < n; i++) {
+
+				if (selected[i]) {
+					group1.add(i);
+				} else {
+					group2.add(i);
+				}
+			}
+
+			if (group1.size() == 0 || group2.size() == 0) {
+				return;
+			}
+
+			makeSet();
+			distribute(group1);
+			distribute(group2);
+
+			if (isConnected(group1, group2)) {
+				int sum1 = populSum(group1);
+				int sum2 = populSum(group2);
+				answer = Math.min(answer, Math.abs(sum1 - sum2));
+			}
+
+			return;
+
+		}
+
+		selected[r] = true;
+		subSet(r + 1);
+		selected[r] = false;
+		subSet(r + 1);
+
+	}
+
+	private static int populSum(List<Integer> group) {
+		int sum = 0;
+		for (int idx : group) {
+			sum += population[idx];
+		}
+
+		return sum;
+	}
+
+	private static void distribute(List<Integer> group) {
+		for (int from : group) {
+			for (int to : group) {
+				if (from != to && graph[from][to] == 1) {
+					union(from, to);
+				}
+			}
+		}
+	}
+
+	private static boolean isConnected(List<Integer> group1, List<Integer> group2) {
+
+		int root1 = find(group1.get(0));
+		for (int i = 1; i < group1.size(); i++) {
+			if (find(group1.get(i)) != root1) {
+				return false;
+			}
+		}
+
+		int root2 = find(group2.get(0));
+		for (int i = 1; i < group2.size(); i++) {
+			if (find(group2.get(i)) != root2) {
+				return false;
+			}
+		}
+
+		return true;
+	}
+
+	private static void makeSet() {
+		for (int i = 0; i < n; i++) {
+			parents[i] = i;
+		}
+	}
+
+	private static int find(int u) {
+		if (parents[u] == u) {
+			return u;
+		}
+		return parents[u] = find(parents[u]);
+	}
+
+	private static void union(int u, int v) {
+		int rootU = find(u);
+		int rootV = find(v);
+		if (rootU != rootV) {
+			parents[rootV] = rootU; // Union by setting one root as the parent of the other
+		}
+	}
+
 }
