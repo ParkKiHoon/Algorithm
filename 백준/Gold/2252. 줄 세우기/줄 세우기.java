@@ -30,7 +30,7 @@ public class Main {
 		}
 		
 		// 우선순위 큐 사용
-        PriorityQueue<Integer> queue = new PriorityQueue<>();
+        Queue<Integer> queue = new ArrayDeque();
         for (int i = 1; i <= N; i++) {
             if (indegree[i] == 0) {
                 queue.offer(i); // 진입 차수가 0인 문제를 큐에 추가
