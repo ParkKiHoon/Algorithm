@@ -1,70 +1,83 @@
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.Comparator;
-import java.util.PriorityQueue;
-import java.util.Scanner;
+import java.util.Arrays;
 
 public class Solution {
-    static int n;
-    static int[][] arr;
-    static boolean[] visited;
-    static int minval;
 
-    public static void main(String[] args) throws NumberFormatException, IOException {
+	private static int N, T;
+	private static int[][] foods;
+
+	public static void main(String[] args) throws Exception {
+
+		// System.setIn(new FileInputStream("input.txt"));
 		BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
-		StringBuilder sb = new StringBuilder();
-		int T;
 		T = Integer.parseInt(in.readLine());
 
-		for (int test_case = 1; test_case <= T; test_case++) {
-			sb.append("#" + test_case + " ");
-			minval=Integer.MAX_VALUE;
-	        n = Integer.parseInt(in.readLine());
-	        arr = new int[n][n];
-	        visited = new boolean[n];
+		for (int t = 1; t <= T; t++) {
+			N = Integer.parseInt(in.readLine()); // 나무 개수
 
-	        // 배열 입력 받기
-	        for (int i = 0; i < n; i++) {
-	        	String[] tmp=in.readLine().split(" ");
-	            for (int j = 0; j < n; j++) {
-	                arr[i][j] = Integer.parseInt(tmp[j]);
-	            }
-	        }
+			foods = new int[N][N];
+			split1 = new int[N / 2];
+			split2 = new int[N / 2];
+			ans = Integer.MAX_VALUE;
 
-	        // dfs 호출
-	        dfs(0, 0);
+			for (int i = 0; i < N; i++) {
+				String[] split = in.readLine().split(" ");
+				for (int j = 0; j < N; j++) {
+					foods[i][j] = Integer.parseInt(split[j]);
+				}
+			}
 
-	        sb.append(minval);
-			sb.append("\n");
+			visited = new boolean[N];
+			cook(0, 0);
+			System.out.println("#" + t + " " + ans);
+		}
+	}
+
+	private static int[] split1;
+	private static int[] split2;
+	private static boolean[] visited;
+	private static int ans;
+
+	private static void cook(int start, int cnt) {
+
+		if (cnt == N / 2) {
+			int idx = 0;
+			for (int i = 0; i < N; i++) {
+				if (!visited[i]) {
+					split2[idx++] = i;
+				}
+			}
+
+			int sum1 = 0;
+			for (int i = 0; i < N / 2; i++) {
+				for (int j = i + 1; j < N / 2; j++) {
+					sum1 += foods[split1[i]][split1[j]];
+					sum1 += foods[split1[j]][split1[i]];
+				}
+			}
+
+			int sum2 = 0;
+			for (int i = 0; i < N / 2; i++) {
+				for (int j = i + 1; j < N / 2; j++) {
+					sum2 += foods[split2[i]][split2[j]];
+					sum2 += foods[split2[j]][split2[i]];
+				}
+			}
+
+			ans = Math.min(ans, Math.abs(sum1 - sum2));
+
+			return;
 		}
 
-		System.out.println(sb);
+		for (int i = start; i < N; i++) {
+			split1[cnt] = i;
+			visited[i] = true;
+			cook(i + 1, cnt + 1);
+			visited[i] = false;
+			split1[cnt] = 0;
 
-    }
+		}
+	}
 
-    static void dfs(int ind, int cnt) {
-        if (cnt == n / 2) {
-            int tmp1 = 0, tmp2 = 0;
-            for (int i = 0; i < n; i++) {
-                for (int j = 0; j < n; j++) {
-                    if (visited[i] && visited[j]) {
-                        tmp1 += arr[i][j];
-                    } else if (!visited[i] && !visited[j]) {
-                        tmp2 += arr[i][j];
-                    }
-                }
-            }
-            minval = Math.min(Math.abs(tmp1 - tmp2), minval);
-            return;
-        }
-
-        for (int i = ind; i < n; i++) {
-            if (!visited[i]) {
-                visited[i] = true;
-                dfs(i + 1, cnt + 1);
-                visited[i] = false;
-            }
-        }
-    }
 }
