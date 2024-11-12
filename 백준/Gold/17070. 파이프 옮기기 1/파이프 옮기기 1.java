@@ -1,50 +1,53 @@
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
+import java.util.*;
 
 public class Main {
-	public static void main(String[] args) throws IOException {
-		BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
+    static int N;
+    static int[][] map;
+    static int count = 0;
+    public static void main(String[] args) throws IOException{
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 
-		int N = Integer.parseInt(in.readLine());
-		int[][] board = new int[N][N];
-		for (int i = 0; i < N; i++) {
-			String[] tmp = in.readLine().split(" ");
-			for (int j = 0; j < N; j++) {
-				board[i][j] = Integer.parseInt(tmp[j]);
-				if (board[i][j] == 1) {
-					board[i][j] = -1;
-				}
-			}
-		}
+        N = Integer.parseInt(br.readLine());
+        map = new int[N+1][N+1];
 
-		int[][][] dp = new int[N][N][3];
-		dp[0][1][0] = 1;
-		for (int i = 2; i < N; i++) {
-			if (board[0][i] != -1) {
-				dp[0][i][0] = dp[0][i - 1][0];
-			}
-		}
-		for (int i = 1; i < N; i++) {
-			for (int j = 2; j < N; j++) {
-				if (board[i][j] == -1) {
-					continue;
-				}
+        for(int i = 1; i<=N; i++){
+            StringTokenizer st = new StringTokenizer(br.readLine());
 
-				if (board[i][j] != -1) {
-					dp[i][j][0] = dp[i][j - 1][0] + dp[i][j - 1][1];
-				}
+            for(int j = 1; j<=N; j++)
+                map[i][j] = Integer.parseInt(st.nextToken());
+        }
 
-				if (board[i][j] != -1 && board[i][j - 1] != -1 && board[i - 1][j] != -1) {
-					dp[i][j][1] = dp[i - 1][j - 1][0] + dp[i - 1][j - 1][1] + dp[i - 1][j - 1][2];
-				}
+        dfs(1, 2, 0);
 
-				if (board[i][j] != -1) {
-					dp[i][j][2] = dp[i - 1][j][1] + dp[i - 1][j][2];
-				}
-			}
+        System.out.println(count);
+    }
 
-		}
-		System.out.println(dp[N - 1][N - 1][0] + dp[N - 1][N - 1][1] + dp[N - 1][N - 1][2]);
-	}
+    //dir이 0이면 가로 1이면 세로 2면 대각선
+    static void dfs(int row, int col, int dir){
+        if(row>N || col>N || map[row][col] == 1)
+            return;
+        if(dir == 2){
+            if(map[row][col-1] == 1 || map[row-1][col] == 1)
+                return;
+        }
+        if(row == N && col == N){
+            count++;
+            return;
+        }
+
+        if(dir == 0){
+            dfs(row, col+1, 0);
+            dfs(row+1, col+1, 2);
+        }
+        else if(dir == 1){
+            dfs(row+1, col, 1);
+            dfs(row+1, col+1, 2);
+        }
+        else{
+            dfs(row+1, col+1, 2);
+            dfs(row, col+1, 0);
+            dfs(row+1, col, 1);
+        }
+    }
 }
