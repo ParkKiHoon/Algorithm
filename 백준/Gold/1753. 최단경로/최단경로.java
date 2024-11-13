@@ -1,81 +1,99 @@
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.ObjectInputStream;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
+import java.util.PriorityQueue;
+
+class Node implements Comparable<Node> {
+	int end, weight;
+
+	public Node(int end, int weight) {
+		this.end = end;
+		this.weight = weight;
+	}
+
+	@Override
+	public int compareTo(Node o) {
+		return this.weight - o.weight;
+	}
+}
 
 public class Main {
 
+	static int v, e, k;
+	static List<Node>[] list;
+	static int[] dist;
 	static int INF = Integer.MAX_VALUE;
-	static int V;
-	static int E;
-	static int start;
-	static int[] visited;
-	static int[] distance;
 
-	private static class Vertex {
-		int no;
-		int weight;
-		Vertex next;
+	public static void main(String[] args) throws Exception {
 
-		public Vertex(int no, int weight, Vertex next) {
-			this.no = no;
-			this.weight = weight;
-			this.next = next;
-		}
-	}
-
-	public static void main(String[] args) throws IOException {
 		BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
-		String[] ve = in.readLine().split(" ");
-		V = Integer.parseInt(ve[0]);
-		E = Integer.parseInt(ve[1]);
+		String[] split = in.readLine().split(" ");
 
-		start = Integer.parseInt(in.readLine());
-		visited = new int[V + 1];
-		distance = new int[V + 1];
-		distance[start] = 0;
+		v = Integer.parseInt(split[0]);
+		e = Integer.parseInt(split[1]);
+		k = Integer.parseInt(in.readLine());
 
-		Arrays.fill(distance, INF);
-
-		Vertex[] adj = new Vertex[V + 1];
-		for (int i = 0; i < E; i++) {
-			String[] split = in.readLine().split(" ");
-			int from = Integer.parseInt(split[0]);
-			int to = Integer.parseInt(split[1]);
-			int w = Integer.parseInt(split[2]);
-
-			adj[from] = new Vertex(to, w, adj[from]);
+		list = new ArrayList[v + 1];
+		dist = new int[v + 1];
+		
+		Arrays.fill(dist, INF);
+		for (int i = 1; i <= v; i++) {
+			list[i] = new ArrayList<Node>();
 		}
-		distance[start]=0;
-		for (int i = 1; i <= V; i++) {
-			int min = INF;
-			int current = 0;
-			for (int j = 1; j <= V; j++) {
-				if (visited[j] == 0 && distance[j] < min) {
-					current = j;
-					min = distance[j];
-				}
-			}
 
-			if (current == 0) {
-				break;
-			}
+		for (int i = 0; i < e; i++) {
+			split = in.readLine().split(" ");
+			int start = Integer.parseInt(split[0]);
+			int end = Integer.parseInt(split[1]);
+			int weight = Integer.parseInt(split[2]);
 
-			visited[current] = 1;
-
-			for(Vertex tmp=adj[current]; tmp!=null ; tmp=tmp.next) {
-				if(visited[tmp.no]==0 &&
-						distance[tmp.no]>distance[current]+tmp.weight) {
-					distance[tmp.no]=distance[current]+tmp.weight;
-				}
-			}
+			list[start].add(new Node(end, weight));
 		}
-		for (int i = 1; i <= V; i++) {
-			if (distance[i] == INF) {
-				System.out.println("INF");
+
+		List<String> ans = new ArrayList<String>();
+
+		dijkstra(k);
+		for (int i = 1; i <= v; i++) {
+			if (dist[i] == INF) {
+				ans.add("INF");
 			} else {
-				System.out.println(distance[i]);
+				ans.add(dist[i] + "");
 			}
 		}
+
+		for(String a: ans) {
+			System.out.println(a);
+		}
+
 	}
+
+	private static void dijkstra(int start) {
+
+		PriorityQueue<Node> queue = new PriorityQueue<>();
+		boolean[] check = new boolean[v + 1];
+		queue.add(new Node(start, 0));
+		dist[start] = 0;
+
+		while (!queue.isEmpty()) {
+			Node currNode = queue.poll();
+			int curr = currNode.end;
+
+			if (check[curr] == true)
+				continue;
+			check[curr] = true;
+
+			for (Node node : list[curr]) {
+				if (dist[node.end] > dist[curr] + node.weight) {
+					dist[node.end] = dist[curr] + node.weight;
+					queue.add(new Node(node.end, dist[node.end]));
+				}
+			}
+
+		}
+
+	}
+
 }
